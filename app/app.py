@@ -12,7 +12,9 @@ from typing import Any, Dict
 
 def main():
     """
-    Main entry point of app.
+    Runs the steps needed to obtain the associated risks per portfolio and the hedge ratio per client.
+
+    :return: Prints the hedge ratio for each client.
     """
     portfolio_data = load_portfolios()
     cashrisks_data = load_cashrisks()
@@ -29,16 +31,31 @@ def main():
 
 
 def load_portfolios():
+    """
+    Method to load a dataset containing portfolio data for clients.
+
+    :return: A dataframe containing the portfolio data.
+    """
     df = pd.read_excel(f'../data/portfolios.xlsx')
     return df
 
 
 def load_cashrisks():
+    """
+    Method to load a dataset containing cash risk data for cash portfolios.
+
+    :return: A dataframe containing the cash risks.
+    """
     df = pd.read_csv(f'../data/cashrisks.csv')
     return df
 
 
 def fx_risks() -> Dict[str, Any]:
+    """
+    Method to obtain fx risk data for fx portfolios via an API.
+
+    :return: A dictionary containing the fx risk data.
+    """
     portfolios = fx.get_all()
     all_risks = {}
     for portfolio in portfolios.get('Value'):
@@ -47,6 +64,11 @@ def fx_risks() -> Dict[str, Any]:
 
 
 def derivatives_risk():
+    """
+    Method to obtain derivative risk data for derivative portfolios via an API.
+
+    :return: A dictionary containing the derivative risk data.
+    """
     portfolios = derivatives.get_all()
     all_risks = {}
     for portfolio in portfolios.get('Value'):
@@ -55,6 +77,12 @@ def derivatives_risk():
 
 
 def hedge(df: pd.DataFrame()):
+    """
+    Method to sum the asset risks and liability risks per client and calculate the hedge ratio per client
+
+    :param df: A dataframe containing portfolio data for each portfolio.
+    :return: A dataframe containing the risk and hedge ratio per client.
+    """
     df = df
     df1 = df[['client', 'risk_assets', 'risk_liabilities']].copy()
     grouped = df1.groupby("client")
